@@ -26,13 +26,14 @@
 
 package net.straylightlabs.hola.sd;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import net.straylightlabs.hola.dns.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Instance {
     private final String name;
@@ -54,10 +55,10 @@ public class Instance {
         if (srv.isPresent()) {
             logger.debug("Using SrvRecord {} to create instance for {}", srv, ptr);
             port = srv.get().getPort();
-            addresses.addAll(records.stream().filter(r -> r instanceof ARecord)
+            addresses.addAll(StreamSupport.stream(records).filter(r -> r instanceof ARecord)
                     .filter(r -> r.getName().equals(srv.get().getTarget())).map(r -> ((ARecord) r).getAddress())
                     .collect(Collectors.toList()));
-            addresses.addAll(records.stream().filter(r -> r instanceof AaaaRecord)
+            addresses.addAll(StreamSupport.stream(records).filter(r -> r instanceof AaaaRecord)
                     .filter(r -> r.getName().equals(srv.get().getTarget())).map(r -> ((AaaaRecord) r).getAddress())
                     .collect(Collectors.toList()));
         } else {

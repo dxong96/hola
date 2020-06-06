@@ -26,6 +26,8 @@
 
 package net.straylightlabs.hola.dns;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +36,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class Record {
     protected final String name;
@@ -115,7 +116,7 @@ public abstract class Record {
             buffer.position(continueFrom);
         }
 
-        return labels.stream().collect(Collectors.joining("."));
+        return StreamSupport.stream(labels).collect(Collectors.joining("."));
     }
 
     private static boolean isPointer(int octet) {

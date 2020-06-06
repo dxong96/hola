@@ -26,8 +26,9 @@
 
 package net.straylightlabs.hola.sd;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import net.straylightlabs.hola.dns.*;
-import net.straylightlabs.hola.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class Query {
     private final Service service;
@@ -281,17 +281,18 @@ public class Query {
     private void fetchMissingRecords() throws IOException {
         logger.debug("Records includes:");
         records.forEach(r -> logger.debug("{}", r));
-        for (PtrRecord ptr : records.stream().filter(r -> r instanceof PtrRecord).map(r -> (PtrRecord) r).collect(Collectors.toList())) {
+
+        for (PtrRecord ptr : StreamSupport.stream(records).filter(r -> r instanceof PtrRecord).map(r -> (PtrRecord) r).collect(Collectors.toList())) {
             fetchMissingSrvRecordsFor(ptr);
             fetchMissingTxtRecordsFor(ptr);
         }
-        for (SrvRecord srv : records.stream().filter(r -> r instanceof SrvRecord).map(r -> (SrvRecord) r).collect(Collectors.toList())) {
+        for (SrvRecord srv : StreamSupport.stream(records).filter(r -> r instanceof SrvRecord).map(r -> (SrvRecord) r).collect(Collectors.toList())) {
             fetchMissingAddressRecordsFor(srv);
         }
     }
 
     private void fetchMissingSrvRecordsFor(PtrRecord ptr) throws IOException {
-        long numRecords = records.stream().filter(r -> r instanceof SrvRecord).filter(
+        long numRecords = StreamSupport.stream(records).filter(r -> r instanceof SrvRecord).filter(
                 r -> r.getName().equals(ptr.getPtrName())
         ).count();
         if (numRecords == 0) {
@@ -301,7 +302,7 @@ public class Query {
     }
 
     private void fetchMissingTxtRecordsFor(PtrRecord ptr) throws IOException {
-        long numRecords = records.stream().filter(r -> r instanceof TxtRecord).filter(
+        long numRecords = StreamSupport.stream(records).filter(r -> r instanceof TxtRecord).filter(
                 r -> r.getName().equals(ptr.getPtrName())
         ).count();
         if (numRecords == 0) {
@@ -311,7 +312,7 @@ public class Query {
     }
 
     private void fetchMissingAddressRecordsFor(SrvRecord srv) throws IOException {
-        long numRecords = records.stream().filter(r -> r instanceof ARecord || r instanceof AaaaRecord).filter(
+        long numRecords = StreamSupport.stream(records).filter(r -> r instanceof ARecord || r instanceof AaaaRecord).filter(
                 r -> r.getName().equals(srv.getTarget())
         ).count();
         if (numRecords == 0) {
@@ -338,7 +339,7 @@ public class Query {
     }
 
     void buildInstancesFromRecords() {
-        records.stream().filter(r -> r instanceof PtrRecord && initialQuestion.answeredBy(r))
+        StreamSupport.stream(records).filter(r -> r instanceof PtrRecord && initialQuestion.answeredBy(r))
                 .map(r -> (PtrRecord) r).forEach(ptr -> instances.add(Instance.createFromRecords(ptr, records)));
     }
 
