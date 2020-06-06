@@ -26,6 +26,7 @@
 
 package net.straylightlabs.hola;
 
+import java8.util.stream.StreamSupport;
 import net.straylightlabs.hola.dns.Domain;
 import net.straylightlabs.hola.sd.Instance;
 import net.straylightlabs.hola.sd.Query;
@@ -51,7 +52,7 @@ public class HolaDriver {
 //            Service service = Service.fromName("_airport._tcp");
             Query query = Query.createFor(service, Domain.LOCAL);
             Set<Instance> instances = query.runOnce();
-            instances.stream().forEach(System.out::println);
+            StreamSupport.stream(instances).forEach(System.out::println);
             if (instances.size() == 0) {
                 logger.error("No instances of type {} found :(", service);
             }

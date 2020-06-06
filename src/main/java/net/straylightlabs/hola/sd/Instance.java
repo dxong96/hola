@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.*;
+import java8.util.Optional;
 
 public class Instance {
     private final String name;
@@ -49,7 +50,7 @@ public class Instance {
         List<InetAddress> addresses = new ArrayList<>();
         Map<String, String> attributes = Collections.emptyMap();
 
-        Optional<SrvRecord> srv = records.stream()
+        Optional<SrvRecord> srv = StreamSupport.stream(records)
                 .filter(r -> r instanceof SrvRecord && r.getName().equals(ptr.getPtrName()))
                 .map(r -> (SrvRecord) r).findFirst();
         if (srv.isPresent()) {
@@ -64,7 +65,7 @@ public class Instance {
         } else {
             throw new IllegalStateException("Cannot create Instance when no SRV record is available");
         }
-        Optional<TxtRecord> txt = records.stream()
+        Optional<TxtRecord> txt = StreamSupport.stream(records)
                 .filter(r -> r instanceof TxtRecord && r.getName().equals(ptr.getPtrName()))
                 .map(r -> (TxtRecord) r).findFirst();
         if (txt.isPresent()) {

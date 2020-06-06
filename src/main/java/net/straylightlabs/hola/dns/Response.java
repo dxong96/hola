@@ -26,6 +26,8 @@
 
 package net.straylightlabs.hola.dns;
 
+import java8.util.Optional;
+import java8.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +112,7 @@ public class Response extends Message {
     }
 
     public String getUserVisibleName() {
-        Optional<PtrRecord> record = records.stream().filter(r -> r instanceof PtrRecord).map(r -> (PtrRecord) r).findAny();
+        Optional<PtrRecord> record = StreamSupport.stream(records).filter(r -> r instanceof PtrRecord).map(r -> (PtrRecord) r).findAny();
         if (record.isPresent()) {
             return record.get().getUserVisibleName();
         } else {
@@ -120,7 +122,7 @@ public class Response extends Message {
     }
 
     public boolean answers(Set<Question> questions) {
-        return (records.stream().filter(r -> {
+        return (StreamSupport.stream(records).filter(r -> {
             boolean match = false;
             String name = r.getName();
             for (Question q : questions) {

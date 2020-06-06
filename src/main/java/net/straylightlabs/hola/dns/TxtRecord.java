@@ -26,6 +26,7 @@
 
 package net.straylightlabs.hola.dns;
 
+import java8.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class TxtRecord extends Record {
 
     private Map<String, String> parseDataStrings(List<String> strings) {
         Map<String, String> pairs = new HashMap<>();
-        strings.stream().forEach(s -> {
+        StreamSupport.stream(strings).forEach(s -> {
             String[] parts = s.split("=");
             if (parts.length > 1) {
                 pairs.put(parts[0], parts[1]);
