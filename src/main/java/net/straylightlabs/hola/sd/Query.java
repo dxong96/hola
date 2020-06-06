@@ -280,7 +280,7 @@ public class Query {
      */
     private void fetchMissingRecords() throws IOException {
         logger.debug("Records includes:");
-        records.forEach(r -> logger.debug("{}", r));
+        StreamSupport.stream(records).forEach(r -> logger.debug("{}", r));
 
         for (PtrRecord ptr : StreamSupport.stream(records).filter(r -> r instanceof PtrRecord).map(r -> (PtrRecord) r).collect(Collectors.toList())) {
             fetchMissingSrvRecordsFor(ptr);
